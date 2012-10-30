@@ -3,7 +3,7 @@ require 'nokogiri'
 require 'date'
 
 class SearchResult
-  attr_reader :postings
+  attr_reader :postings, :time
 
   def initialize
     @postings = []
@@ -11,10 +11,10 @@ class SearchResult
   end
 
   def self.from_nokogiri(nokogiri, time)
-    @time = time
     search_result = self.new
+    search_result.time = time
     nokogiri.css('.row').each do |result|
-      search_result.postings << parse(result)
+      search_result.postings << Posting.new(parse(result))
     end
     search_result
   end
