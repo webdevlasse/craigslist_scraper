@@ -20,13 +20,12 @@ describe Query do
   end
 
   context "#search" do
+    let(:new_query) { Query.new('http://sfbay.craigslist.org/search/sss?query=bike&srchType=A&minAsk=&maxAsk=') }
     it "calls SearchResult.from_Nokogiri passing a Nokogiri object" do
-      new_query = Query.new('http://sfbay.craigslist.org/search/sss?query=bike&srchType=A&minAsk=&maxAsk=')
-      SearchResult.should_receive(:from_nokogiri).with(Nokogiri::HTML::Document)
+      SearchResult.should_receive(:from_nokogiri)
       new_query.search
     end
     it "returns a new SearchResult instance" do
-      new_query = Query.new('http://sfbay.craigslist.org/search/sss?query=bike&srchType=A&minAsk=&maxAsk=')
       SearchResult.stub(:from_nokogiri).and_return(SearchResult.new)
       expect(new_query.search).to be_an_instance_of(SearchResult)
     end

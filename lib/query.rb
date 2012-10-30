@@ -18,7 +18,8 @@ class Query
     SearchResult.from_nokogiri(url_to_nokogiri_document, Time.now)
   end
 
-  def url_to_nokogiri_document
-    Nokogiri::HTML(open(@url))
-  end
+  private
+    def url_to_nokogiri_document
+      Nokogiri::HTML(open(@url))
+    end
 end
