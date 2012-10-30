@@ -33,6 +33,32 @@ describe Query do
   end
 
   context "#save" do
-    it "should save its items to the database"
+    before do
+      @query = Query.new('http://sfbay.craigslist.org/search/sss?query=bike&srchType=A&minAsk=&maxAsk=')
+    end
+
+    after do
+      db = SQLite3::Database.open('test.db')
+      db.execute "DROP TABLE IF EXISTS queries"
+    end
+
+    it 'saves itself to the db' do
+      @query.save('test.db').should be(true)
+    end
+
+    it 'persists in the db' do
+      @query.save('test.db')
+      db = SQLite3::Database.open('test.db')
+      saved_query = db.execute "SELECT * FROM queries WHERE id=1"
+      saved_query[0][0..1].should eq([1, 'http://sfbay.craigslist.org/search/sss?query=bike&srchType=A&minAsk=&maxAsk='])
+    end
+
+    it 'calls save on the search results' do
+      search_result = double('search_result')
+      SearchResult.stub(:from_nokogiri).and_return(search_result)
+      @query.search
+      search_result.should_receive(:save).with(1, 'test.db')
+      @query.save('test.db')
+    end
   end
 end
