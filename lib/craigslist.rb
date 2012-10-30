@@ -9,7 +9,7 @@ class CraigslistUI
     @current_user = current_user
   end
 
-  def request_input
+  def start_organized_beer
     prompts
     until (input = gets.chomp) == 'exit'
       case input
@@ -38,49 +38,35 @@ class CraigslistUI
       query.save(@db_name, @current_user)
     end
 
-    def list_queries
+    def list_queries # NOTE: move logic to Query class
       db = SQLite3::Database.open(@db_name)
       queries = db.execute "SELECT * FROM queries WHERE user_id='#{@current_user.id}'"
       queries.each { |query| puts query }
     end
 
     def current_user
-      db = SQLite3::Database.open(@db_name)
-      create_users_table(db)
-      most_recent_user = (db.execute "SELECT * FROM users ORDER BY updated_at DESC LIMIT 1")[0]
-      User.new(id, email)
-    end
-
-    def create_users_table(db)
-      db.execute "CREATE TABLE IF NOT EXISTS users(Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  Email VARCHAR(80) NOT NULL, Updated_at DATETIME NOT NULL)"
-      db.execute "CREATE UNIQUE INDEX IF NOT EXISTS UniqueEmail ON Users (email)"
+      User.load_most_recent_from_db(@db_name)
     end
 
     def change_user
       puts "What email do you want to sign in as?"
       new_user_email = gets.chomp
-      db = SQLite3::Database.open(@db_name)
-      new_user = db.execute "SELECT * FROM users WHERE email='#{new_user_email}'"
-      if new_user.empty?
+      new_user = User.load_by_email_from_db(@db_name, new_user_email)
+      if new_user.nil?
         puts "Email address not found"
       else
-        @current_user = User.new(new_user[0][0], new_user[0][1])
+        @current_user = new_user
       end
     end
 
     def create_user # NOTE: need to handle error if email is not unique (uniqueness enforced by db)
       puts "What email do you want to use?"
-      db = SQLite3::Database.open(@db_name)
       new_user_email = gets.chomp
-      db.execute "INSERT INTO users(email, updated_at) VALUES ('#{new_user_email}', DATETIME('now'))"
-      new_user_id = (db.execute "SELECT Id FROM users WHERE email='#{new_user_email}'")[0][0]
-      @current_user = User.new(new_user_id, new_user_email)
+      new_user = User.create_and_save(@db_name, new_user_email)
+      if new_user.nil?
+        puts "User email already exists"
+      else
+        @current_user = new_user
+      end
     end
 end
-
-
-
-
-# Usage
-# What do you want to do? (create query, list queries)
