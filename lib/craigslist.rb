@@ -13,7 +13,7 @@ class CraigslistUI
     prompts
     until (input = gets.chomp) == 'exit'
       case input
-      when 'create' then create_query(input)
+      when 'create' then create_query
       when 'list'   then list_queries
       when 'signin' then change_user
       when 'signup' then create_user
@@ -31,6 +31,8 @@ class CraigslistUI
     end
 
     def create_query(url)
+      puts "What Craigslist url would you like to query?"
+      url = gets.chomp
       query = Query.new(url)
       query.search
       query.save(@db_name, @current_user)
@@ -44,8 +46,15 @@ class CraigslistUI
 
     def current_user
       db = SQLite3::Database.open(@db_name)
+      create_users_table(db)
       most_recent_user = (db.execute "SELECT * FROM users ORDER BY updated_at DESC LIMIT 1")[0]
       User.new(id, email)
+    end
+
+    def create_users_table(db)
+      db.execute "CREATE TABLE IF NOT EXISTS users(Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  Email VARCHAR(80) NOT NULL, Updated_at DATETIME NOT NULL)"
+      db.execute "CREATE UNIQUE INDEX IF NOT EXISTS UniqueEmail ON Users (email)"
     end
 
     def change_user
@@ -60,7 +69,7 @@ class CraigslistUI
       end
     end
 
-    def create_user
+    def create_user # NOTE: need to handle error if email is not unique (uniqueness enforced by db)
       puts "What email do you want to use?"
       db = SQLite3::Database.open(@db_name)
       new_user_email = gets.chomp
