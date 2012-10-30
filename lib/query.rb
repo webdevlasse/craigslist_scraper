@@ -31,6 +31,10 @@ class Query
     end
   end
 
+  def to_s
+    @url
+  end
+
   private
     def url_to_nokogiri_document
       Nokogiri::HTML(open(@url))

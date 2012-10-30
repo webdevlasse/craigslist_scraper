@@ -61,4 +61,11 @@ describe Query do
       @query.save('test.db')
     end
   end
+
+  context "#to_s" do
+    it "prints the url" do
+      query = Query.new('http://sfbay.craigslist.org/search/sss?query=bike&srchType=A&minAsk=&maxAsk=')
+      query.to_s.should eq('http://sfbay.craigslist.org/search/sss?query=bike&srchType=A&minAsk=&maxAsk=')
+    end
+  end
 end
