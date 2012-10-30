@@ -35,7 +35,7 @@ describe Posting do
     end
 
     it 'saves itself to the db' do
-      @new_posting.save(1, 'test.db').should eq([])
+      @new_posting.save(1, 'test.db').should be(true)
     end
 
     it 'persists in the db' do
@@ -44,15 +44,20 @@ describe Posting do
       saved_posting = db.execute "SELECT * FROM postings WHERE id=1"
       saved_posting.should eq([[1, 'A title', 8.9, 'burlingame', 'bicycles - by owner',
                                'http://sfbay.craigslist.org/pen/bik/3369136014.html',
-                               @time.strftime('%Y-%m-%d %H:%M:%S')]])
+                               @time.strftime('%Y-%m-%d')]])
     end
 
     it "creates a record in the join table" do
-      @new_posting.save(1, 'test.db').should eq([])
+      @new_posting.save(1, 'test.db')
       db = SQLite3::Database.open('test.db')
       join = db.execute "SELECT * FROM search_results_postings LIMIT 1 "
       join.should eq([[1, 1, 1]])
 
+    end
+
+    it "returns false when date is not DateTime object" do
+      bad_posting = Posting.new({posted_at: 'bad', title: 'A title'})
+      expect(bad_posting.save(1, 'test.db')).to be(false)
     end
   end
 end

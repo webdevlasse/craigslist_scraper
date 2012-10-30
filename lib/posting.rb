@@ -11,11 +11,16 @@ class Posting
   attr_reader :posted_at, :title, :price, :location, :category, :url
 
   def save(search_result_id, db_name)
-    @db = open_db(db_name)
-    create_postings_table
-    insert_self_into_postings_table
-    create_join_table
-    insert_join_record(search_result_id)
+    begin
+      @db = open_db(db_name)
+      create_postings_table
+      insert_self_into_postings_table
+      create_join_table
+      insert_join_record(search_result_id)
+      true
+    rescue
+      false
+    end
   end
 
   private
@@ -26,18 +31,18 @@ class Posting
     def create_postings_table
       @db.execute "CREATE TABLE IF NOT EXISTS postings(Id INTEGER PRIMARY KEY AUTOINCREMENT,
               Title VARCHAR(100), Price INT, Location VARCHAR(64),
-              Category VARCHAR(48), Url VARCHAR(100), Posted_at DATETIME)"
+              Category VARCHAR(48), Url VARCHAR(100), Posted_at DATE)"
     end
 
     def insert_self_into_postings_table
       @db.execute "INSERT INTO postings(Title, Price, Location, Category, Url, Posted_at)
                   VALUES(\"#{title}\", \"#{price}\", \"#{location}\", \"#{category}\",
-                         \"#{url}\",DATETIME('#{posted_at.strftime('%Y-%m-%d %H:%M:%S')}'))"
+                         \"#{url}\",DATE('#{posted_at.strftime('%Y-%m-%d')}'))"
     end
 
     def create_join_table
-      @db.execute "CREATE TABLE IF NOT EXISTS search_results_postings(Id INTEGER PRIMARY KEY AUTOINCREMENT, search_result_id INTEGER,
-                       posting_id INTEGER)"
+      @db.execute "CREATE TABLE IF NOT EXISTS search_results_postings(Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                   search_result_id INTEGER, posting_id INTEGER)"
     end
 
     def insert_join_record(search_result_id)
