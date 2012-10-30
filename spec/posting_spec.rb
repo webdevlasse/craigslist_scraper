@@ -1,8 +1,15 @@
 require_relative 'spec_helper'
 
 describe Posting do
-  context "#initialize" do
-
+  context "setters" do
+    new_posting = Posting.new({posted_at: @time, title: 'A title',
+                                price: 8.9, location: 'burlingame',
+                                category: 'bicycles - by owner',
+                                url: 'http://sfbay.craigslist.org/pen/bik/3369136014.html'})
+    subject { new_posting }
+    [:posted_at, :title, :price, :location, :category, :url].each do |method|
+      it { should respond_to(method) }
+    end
   end
 
   context '#attr_reader' do
