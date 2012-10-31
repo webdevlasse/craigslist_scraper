@@ -46,7 +46,7 @@ class Query
 
     def create_queries_table
       @db.execute "CREATE TABLE IF NOT EXISTS queries(Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                   Url VARCHAR(100), User_id INT, Created_at DATETIME)"
+                   Url VARCHAR(100), User_id INT, Created_at DATETIME, Unique (Url, User_id))"
     end
 
     def insert_self_into_queries_table(user)
