@@ -1,10 +1,11 @@
 class User
-  def initialize(id, email)
+  def initialize(id, email, last_emailed_at = nil)
     @id = id
     @email = email
+    @last_emailed_at = last_emailed_at
   end
 
-  attr_reader :id, :email
+  attr_reader :id, :email, :last_emailed_at
 
   def self.load_most_recent_from_db(db_name)
     open_db_and_create_users_table(db_name)
@@ -29,6 +30,12 @@ class User
     end
   end
 
+  def update_last_emailed_at!(db_name)
+    db = self.open_db(db_name)
+    db.execute "UPDATE users
+                SET Last_emailed_at = DATETIME('now')
+                WHERE id = #{self.id} "
+  end
 
   private
     def save_self_to_db
@@ -46,7 +53,7 @@ class User
 
     def self.create_users_table
       @db.execute "CREATE TABLE IF NOT EXISTS users(Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  Email VARCHAR(80) NOT NULL, Updated_at DATETIME NOT NULL)"
+                  Email VARCHAR(80) NOT NULL, Updated_at DATETIME NOT NULL, Last_emailed_at DATETIME)"
       @db.execute "CREATE UNIQUE INDEX IF NOT EXISTS UniqueEmail ON Users (email)"
     end
 
