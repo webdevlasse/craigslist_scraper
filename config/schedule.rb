@@ -20,7 +20,8 @@
 # Learn more: http://github.com/javan/whenever
 
 set :output, "/Users/apprentice/Dropbox/craigslist_scraper/cron_log.log"
+env :PATH, '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/Users/apprentice/.rvm/rubies/ruby-1.9.3-p194/bin/ruby:/Users/apprentice/Dropbox/craigslist_scraper'
 
-every 1.day, :at => '10:31 pm' do
-  command "ruby /Users/apprentice/Dropbox/craigslist_scraper/email_init.rb"
+every 1.day, :at => '09:27 am' do
+  command "cd /Users/apprentice/Dropbox/craigslist_scraper/; /Users/apprentice/.rvm/rubies/ruby-1.9.3-p194/bin/ruby email_init.rb"
 end
