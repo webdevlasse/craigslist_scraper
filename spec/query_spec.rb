@@ -35,6 +35,8 @@ describe Query do
   context "#save" do
     before do
       @query = Query.new('http://sfbay.craigslist.org/search/sss?query=bike&srchType=A&minAsk=&maxAsk=')
+      @user = double('user')
+      @user.stub(:id).and_return(1)
     end
 
     after do
@@ -43,11 +45,11 @@ describe Query do
     end
 
     it 'saves itself to the db' do
-      @query.save('test.db').should be(true)
+      @query.save('test.db', @user).should be(true)
     end
 
     it 'persists in the db' do
-      @query.save('test.db')
+      @query.save('test.db', @user)
       db = SQLite3::Database.open('test.db')
       saved_query = db.execute "SELECT * FROM queries WHERE id=1"
       saved_query[0][0..1].should eq([1, 'http://sfbay.craigslist.org/search/sss?query=bike&srchType=A&minAsk=&maxAsk='])
@@ -58,7 +60,7 @@ describe Query do
       SearchResult.stub(:from_nokogiri).and_return(search_result)
       @query.search
       search_result.should_receive(:save).with(1, 'test.db')
-      @query.save('test.db')
+      @query.save('test.db', @user)
     end
   end
 
