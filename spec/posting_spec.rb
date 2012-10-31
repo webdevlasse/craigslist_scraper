@@ -59,5 +59,11 @@ describe Posting do
       bad_posting = Posting.new({posted_at: 'bad', title: 'A title'})
       expect(bad_posting.save(1, 'test.db')).to be(false)
     end
+
+    it 'returns false when url is not unique' do
+      @new_posting.save(1, 'test.db')
+      dupe_posting = @new_posting.dup
+      expect(dupe_posting.save(1, 'test.db')).to be(false)
+    end
   end
 end

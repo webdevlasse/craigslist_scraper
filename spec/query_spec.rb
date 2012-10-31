@@ -62,6 +62,11 @@ describe Query do
       search_result.should_receive(:save).with(1, 'test.db')
       @query.save('test.db', @user)
     end
+
+    it 'returns false when a duplicate url + user_id pair' do
+      @query.save('test.db', @user)
+      expect(@query.save('test.db', @user)).to be(false)
+    end
   end
 
   context "#to_s" do

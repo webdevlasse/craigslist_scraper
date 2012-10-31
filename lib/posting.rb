@@ -32,6 +32,7 @@ class Posting
       @db.execute "CREATE TABLE IF NOT EXISTS postings(Id INTEGER PRIMARY KEY AUTOINCREMENT,
               Title VARCHAR(100), Price INT, Location VARCHAR(64),
               Category VARCHAR(48), Url VARCHAR(100), Posted_at DATE)"
+      @db.execute "CREATE UNIQUE INDEX IF NOT EXISTS UniqueUrl ON postings (Url)"
     end
 
     def insert_self_into_postings_table
