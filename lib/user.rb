@@ -1,11 +1,23 @@
+require 'sqlite3'
+
 class User
   def initialize(id, email, last_emailed_at = nil)
     @id = id
     @email = email
-    @last_emailed_at = last_emailed_at
+    @last_emailed_at = last_emailed_at || DateTime.parse('2000-01-01')
   end
 
   attr_reader :id, :email, :last_emailed_at
+
+  def self.load_all_from_db(db_name)
+    open_db(db_name)
+    user_data = @db.execute "SELECT * FROM users"
+    users = []
+    user_data.each do |user|
+      users << User.new(user[0], user[1], user[3])
+    end
+    users
+  end
 
   def self.load_most_recent_from_db(db_name)
     open_db_and_create_users_table(db_name)
@@ -31,7 +43,7 @@ class User
   end
 
   def update_last_emailed_at!(db_name)
-    db = self.open_db(db_name)
+    db = SQLite3::Database.open(db_name)
     db.execute "UPDATE users
                 SET Last_emailed_at = DATETIME('now')
                 WHERE id = #{self.id} "
