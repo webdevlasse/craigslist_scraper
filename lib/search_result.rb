@@ -1,7 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'date'
-require './posting.rb'
+require_relative 'posting'
 require 'sqlite3'
 
 class SearchResult
@@ -39,7 +39,9 @@ class SearchResult
     def self.parse(row)
       posted_at = Date.parse(row.at_css(".itemdate").text.strip)
       title = row.at_css("a").text.strip
-      price = row.at_css(".itempp").text.strip.gsub(/[$](\d+)/, '\1')
+# puts row
+# puts title
+      price = row.at_css(".itempp").text.strip.gsub(/[$](\d+)/, '\1') if row.at_css('.itempp')
       location = row.at_css(".itempn").text.strip.gsub(/[(](.+)[)]/, '\1')
       category = row.at_css(".itemcg").text.strip
       url = row.at_css("a").attributes["href"].value

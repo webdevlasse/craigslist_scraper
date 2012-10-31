@@ -12,6 +12,7 @@ class CraigslistUI
   def start_organized_beer
     prompts
     until (input = gets.chomp) == 'exit'
+      puts "\n"
       case input
       when 'create' then create_query
       when 'list'   then list_queries
@@ -25,12 +26,17 @@ class CraigslistUI
   private
 
     def prompts
-      puts "Currently signed in as #{@current_user.email}"
+      if @current_user.nil?
+        puts "Please create an account"
+        create_user
+      end
+      puts "\nCurrently signed in as #{@current_user.email}\n"
       puts "What would you like to do? ('create' to create a query, 'list' to list your queries, \
       'signin' to change users, 'signup' to create a new account, 'exit')"
+      print ">"
     end
 
-    def create_query(url)
+    def create_query
       puts "What Craigslist url would you like to query?"
       url = gets.chomp
       query = Query.new(url)
@@ -39,9 +45,13 @@ class CraigslistUI
     end
 
     def list_queries # NOTE: move logic to Query class
-      db = SQLite3::Database.open(@db_name)
-      queries = db.execute "SELECT * FROM queries WHERE user_id='#{@current_user.id}'"
-      queries.each { |query| puts query }
+      begin
+        db = SQLite3::Database.open(@db_name)
+        queries = db.execute "SELECT * FROM queries WHERE user_id='#{@current_user.id}'"
+        queries.each { |query| puts query[1] }
+      rescue
+        puts "No queries for this user."
+      end
     end
 
     def current_user
