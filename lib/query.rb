@@ -27,6 +27,8 @@ class Query
       @search_result.save(id, db_name) if @search_result
       true
     rescue
+      id = retrieve_id_via_url_and_user(user)
+      @search_result.save(id, db_name) if @search_result
       false
     end
   end
@@ -36,6 +38,11 @@ class Query
   end
 
   private
+
+    def retrieve_id_via_url_and_user(user)
+      (@db.execute "SELECT Id FROM queries WHERE url='#{@url}' AND User_id=#{user.id}")[0][0]
+    end
+
     def url_to_nokogiri_document
       Nokogiri::HTML(open(@url))
     end
@@ -55,7 +62,6 @@ class Query
     end
 
     def retrieve_id_from_db
-      id = @db.execute "SELECT Id FROM queries ORDER BY Created_at DESC LIMIT 1"
-      id[0][0]
+      (@db.execute "SELECT Id FROM queries ORDER BY Created_at DESC LIMIT 1")[0][0]
     end
 end

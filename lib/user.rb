@@ -14,7 +14,7 @@ class User
     user_data = @db.execute "SELECT * FROM users"
     users = []
     user_data.each do |user|
-      users << User.new(user[0], user[1], user[3])
+      users << User.new(user[0], user[1], DateTime.parse(user[3]))
     end
     users
   end

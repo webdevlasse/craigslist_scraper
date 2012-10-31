@@ -35,6 +35,8 @@ describe SearchResult do
     after do
       db = SQLite3::Database.open('test.db')
       db.execute "DROP TABLE search_results"
+      db.execute "DROP TABLE postings"
+      db.execute "DROP TABLE search_results_postings"
     end
 
     it 'saves itself to the db' do
