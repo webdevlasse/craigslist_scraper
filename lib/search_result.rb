@@ -1,7 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'date'
-require 'posting'
+require_relative 'posting'
 require 'sqlite3'
 
 class SearchResult

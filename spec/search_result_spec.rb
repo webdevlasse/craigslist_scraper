@@ -1,14 +1,13 @@
 require 'rspec'
 require 'open-uri'
 require 'nokogiri'
-require '../lib/search_result.rb'
+require_relative 'spec_helper'
 
-describe "SearchResult" do
+describe SearchResult do
 
   context ".from_nokogiri" do
-
     context "returns an instance initialized with the proper number of postings" do
-      let(:page) { File.open('./fixtures/cl_search.html') }
+      let(:page) { File.open(File.dirname(__FILE__) + '/fixtures/cl_search.html') }
       let(:nokogiri) { Nokogiri::HTML(page) }
       it "returns an instance initialized with the proper number of postings" do
         result = SearchResult.from_nokogiri(nokogiri, Time.now)
@@ -17,7 +16,7 @@ describe "SearchResult" do
     end
 
     context "initializes without postings" do
-      let(:empty_nokogiri) { Nokogiri::HTML(File.open('./fixtures/empty_results.html')) }
+      let(:empty_nokogiri) { Nokogiri::HTML(File.open(File.dirname(__FILE__) + '/fixtures/empty_results.html')) }
       it "initializes without postings" do
         result = SearchResult.from_nokogiri(empty_nokogiri, Time.now)
         result.postings.should be_empty
